@@ -1,6 +1,9 @@
 import { ArrowRight, CalendarDays, Clock, QrCode } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
 
 export function Home() {
+  const { signInWithGoogle } = useAuth();
+
   return (
     <div className="animate-slide-up" style={{
       display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', marginTop: '4rem', gap: '2rem'
@@ -16,8 +19,8 @@ export function Home() {
         Pengambilan Tiket Antrian secara Online untuk pelayanan pengambilan PIN di SMKN 1 Plosoklaten
       </p>
 
-      <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem' }}>
-        <button className="btn btn-primary" style={{ fontSize: '1.125rem', padding: '1rem 2rem' }}>
+      <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem', justifyContent: 'center' }}>
+        <button onClick={signInWithGoogle} className="btn btn-primary" style={{ fontSize: '1.125rem', padding: '1rem 2rem' }}>
           Ambil Antrean
           <ArrowRight size={20} />
         </button>

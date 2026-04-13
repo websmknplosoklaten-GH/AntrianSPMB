@@ -10,13 +10,8 @@ export function Layout() {
       <header className="glass" style={{ position: 'sticky', top: 0, zIndex: 50 }}>
         <div className="layout-container header-container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem 2rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <div style={{
-              background: 'linear-gradient(135deg, hsl(var(--primary)), hsl(var(--secondary)))',
-              padding: '0.5rem',
-              borderRadius: 'var(--radius-md)',
-              boxShadow: 'var(--shadow-glow)'
-            }}>
-              <Ticket color="white" size={24} />
+            <div>
+              <img src="public/logo.png" alt="Logo SMKN 1 Plosoklaten" style={{ height: '40px', width: 'auto' }} />
             </div>
             <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800 }}>
               Antrian Online<span className="text-gradient"> SPMB</span>
@@ -35,7 +30,7 @@ export function Layout() {
                   )}
                   <span style={{ display: 'none' }} className="user-name-display">{user.user_metadata?.full_name || user.email}</span>
                 </div>
-                
+
                 {user.profile?.role === 'admin' && (
                   <button onClick={() => navigate('/admin')} className="badge" style={{ cursor: 'pointer', border: '1px solid hsla(var(--primary))', background: 'hsla(var(--primary)/0.1)', color: 'hsl(var(--primary))' }}>
                     Admin Panel
