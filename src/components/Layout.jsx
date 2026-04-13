@@ -8,7 +8,7 @@ export function Layout() {
   return (
     <>
       <header className="glass" style={{ position: 'sticky', top: 0, zIndex: 50 }}>
-        <div className="layout-container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem 2rem' }}>
+        <div className="layout-container header-container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem 2rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
             <div style={{
               background: 'linear-gradient(135deg, hsl(var(--primary)), hsl(var(--secondary)))',
@@ -24,7 +24,7 @@ export function Layout() {
           </div>
           <nav style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
             {user ? (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              <div className="header-actions" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', fontSize: '0.875rem', fontWeight: 600 }}>
                   {user.user_metadata?.avatar_url ? (
                     <img src={user.user_metadata.avatar_url} alt="avatar" style={{ width: 32, height: 32, borderRadius: '50%', border: '1px solid hsla(var(--border))' }} />

@@ -183,3 +183,66 @@ h1, h2, h3, h4, h5, h6 {
 .animate-float {
   animation: float 6s ease-in-out infinite;
 }
+
+/* =========================================
+   MOBILE RESPONSIVENESS
+========================================= */
+@media (max-width: 768px) {
+  html {
+    font-size: 14px;
+  }
+  .layout-container {
+    padding: 1rem;
+  }
+  .header-container {
+    flex-direction: column !important;
+    gap: 1rem;
+    text-align: center;
+  }
+  .header-actions {
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+  }
+  .header-actions .btn {
+    flex: 1;
+  }
+  
+  .glass-card {
+    padding: 1.5rem;
+  }
+
+  .schedule-item {
+    flex-direction: column !important;
+    text-align: center;
+    gap: 1.5rem;
+  }
+  
+  .schedule-item .btn {
+    width: 100%;
+  }
+
+  .schedule-info-row {
+    flex-direction: column;
+    align-items: center !important;
+    gap: 0.5rem !important;
+  }
+
+  .admin-table-wrapper {
+    overflow-x: auto;
+    display: block;
+    width: 100%;
+  }
+
+  .schedule-form {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+  .schedule-form > div {
+    width: 100%;
+  }
+  .schedule-form .btn {
+    width: 100%;
+    margin-top: 0.5rem;
+  }
+}

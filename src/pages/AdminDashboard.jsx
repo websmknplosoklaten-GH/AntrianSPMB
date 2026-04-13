@@ -237,7 +237,7 @@ function AdminJadwal() {
     <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
       <h2 style={{ fontSize: '1.75rem' }}>Manajemen Kuota Jadwal</h2>
       
-      <div style={{ background: 'hsla(var(--primary)/0.05)', padding: '1.5rem', borderRadius: 'var(--radius-md)', display: 'flex', gap: '1rem', alignItems: 'flex-end', flexWrap: 'wrap' }}>
+      <div className="schedule-form" style={{ background: 'hsla(var(--primary)/0.05)', padding: '1.5rem', borderRadius: 'var(--radius-md)', display: 'flex', gap: '1rem', alignItems: 'flex-end', flexWrap: 'wrap' }}>
         <div style={{ flex: 1.5, minWidth: '250px' }}>
           <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>Nama Jadwal / Gelombang</label>
           <input type="text" value={name} onChange={(e) => setName(e.target.value)} style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-sm)', border: '1px solid hsla(var(--border))' }} placeholder="Misal: Pengambilan PIN Jalur Zonasi" />
@@ -255,7 +255,7 @@ function AdminJadwal() {
         </button>
       </div>
 
-      <div style={{ marginTop: '1rem', overflowX: 'auto' }}>
+      <div className="admin-table-wrapper" style={{ marginTop: '1rem', overflowX: 'auto' }}>
         <table style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse' }}>
           <thead>
             <tr style={{ borderBottom: '2px solid hsla(var(--border))' }}>

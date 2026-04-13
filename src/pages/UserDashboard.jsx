@@ -216,7 +216,7 @@ function ScheduleSelection({ schedules, onSelect }) {
           if (!sch || !sch.queue_date) return null;
           const dDate = parseISO(sch.queue_date);
           return (
-            <div key={sch.id} className="glass-card" style={{
+            <div key={sch.id} className="glass-card schedule-item" style={{
               display: 'flex', justifyContent: 'space-between', alignItems: 'center',
               padding: '2rem', transition: 'box-shadow 0.2s',
             }}>
@@ -227,7 +227,7 @@ function ScheduleSelection({ schedules, onSelect }) {
                 <h4 style={{ fontSize: '1.25rem', margin: '0.5rem 0' }}>
                   {format(dDate, 'EEEE, dd MMMM yyyy', { locale: id })}
                 </h4>
-                <div style={{ display: 'flex', gap: '1.5rem', marginTop: '0.5rem', color: 'hsl(var(--text-muted))' }}>
+                <div className="schedule-info-row" style={{ display: 'flex', gap: '1.5rem', marginTop: '0.5rem', color: 'hsl(var(--text-muted))' }}>
                   <span style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.95rem' }}>
                     <Clock size={16} /> 07:00 - 15:00
                   </span>
