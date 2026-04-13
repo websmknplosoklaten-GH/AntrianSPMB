@@ -11,7 +11,7 @@ export function Layout() {
         <div className="layout-container header-container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem 2rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
             <div>
-              <img src="public/logo.png" alt="Logo SMKN 1 Plosoklaten" style={{ height: '40px', width: 'auto' }} />
+              <img src="/Logo.png" alt="Logo SMKN 1 Plosoklaten" style={{ height: '40px', width: 'auto' }} />
             </div>
             <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800 }}>
               Antrian Online<span className="text-gradient"> SPMB</span>
