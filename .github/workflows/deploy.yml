@@ -25,10 +25,9 @@ jobs:
     - name: 🏗️ Memulai Kompilasi (NPM Run Build)
       run: npm run build
       env:
-        # Variabel ini akan diinjeksi saat proses build aplikasi Vite oleh GitHub Actions
-        # Syaratnya harus sudah dibuat Secretnya di GitHub (Settings > Secrets and variables > Actions)
-        VITE_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-        VITE_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        # Variabel publik disematkan langsung agar aplikasi mendapatkan URL Supabase
+        VITE_SUPABASE_URL: "https://izgudhyhstsxuokqvwoo.supabase.co"
+        VITE_SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6Z3VkaHloc3RzeHVva3F2d29vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYwNTcxMzYsImV4cCI6MjA5MTYzMzEzNn0.GCxCr284wto4j8nDevlOoz2wEsu2toH-ZjUbtM-8Lx0"
 
     - name: 🚀 Mengirim ke Web Hosting via Jalur FTP
       uses: SamKirkland/FTP-Deploy-Action@v4.3.4
