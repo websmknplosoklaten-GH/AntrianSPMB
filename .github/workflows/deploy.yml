@@ -1,0 +1,40 @@
+name: Deploy Antrian SPMB Web
+
+on:
+  push:
+    branches:
+      - main
+      - master # Menambahkan master untuk berjaga-jaga jika branch utamanya bernama master
+
+jobs:
+  web-deploy:
+    name: 🎉 Membangun dan Upload App
+    runs-on: ubuntu-latest
+    steps:
+    - name: 🚚 Mengambil Kode dari GitHub
+      uses: actions/checkout@v4
+
+    - name: ⚙️ Persiapan Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 18
+
+    - name: 📦 Mengunduh Modul (NPM Install)
+      run: npm install
+
+    - name: 🏗️ Memulai Kompilasi (NPM Run Build)
+      run: npm run build
+      env:
+        # Variabel ini akan diinjeksi saat proses build aplikasi Vite oleh GitHub Actions
+        # Syaratnya harus sudah dibuat Secretnya di GitHub (Settings > Secrets and variables > Actions)
+        VITE_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+        VITE_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+
+    - name: 🚀 Mengirim ke Web Hosting via Jalur FTP
+      uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+      with:
+        server: ${{ secrets.FTP_SERVER }}
+        username: ${{ secrets.FTP_USERNAME }}
+        password: ${{ secrets.FTP_PASSWORD }}
+        local-dir: ./dist/
+        server-dir: ./
