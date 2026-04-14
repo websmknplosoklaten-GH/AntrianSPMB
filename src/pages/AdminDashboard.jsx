@@ -38,9 +38,18 @@ export function AdminDashboard() {
         >
            Manajemen Kuota Jadwal
         </button>
+        <button 
+          className={activeTab === 'DAFTAR' ? 'btn btn-primary' : 'btn btn-outline'} 
+          onClick={() => setActiveTab('DAFTAR')}
+          style={{ padding: '0.75rem 2rem' }}
+        >
+           Daftar Seluruh Antrean
+        </button>
       </div>
 
-      {activeTab === 'LOKET' ? <AdminLoket /> : <AdminJadwal />}
+      {activeTab === 'LOKET' && <AdminLoket />}
+      {activeTab === 'JADWAL' && <AdminJadwal />}
+      {activeTab === 'DAFTAR' && <AdminDaftarAntrean />}
     </div>
   );
 }
@@ -130,6 +139,19 @@ function AdminLoket() {
             <p style={{ color: 'hsl(var(--text-muted))', fontWeight: 600 }}>Sedang Berlangsung:</p>
             <h1 style={{ color: 'hsl(var(--primary))', fontSize: '4.5rem', lineHeight: 1, margin: '1rem 0' }}>{currentTicket.queue_number}</h1>
             <p style={{ fontSize: '1.125rem', fontWeight: 600 }}>{currentTicket.full_name}</p>
+            
+            <button
+               onClick={() => {
+                 if (window.confirm("Bypass verifikasi scan QR?")) {
+                    handleVerifikasi(currentTicket.id);
+                 }
+               }}
+               disabled={loading}
+               className="btn btn-outline"
+               style={{ marginTop: '1rem', width: '100%', fontSize: '0.875rem' }}
+            >
+               Tandai Selesai (Manual / Bypass Scan)
+            </button>
           </div>
         ) : (
            <div style={{ textAlign: 'center', padding: '2rem', color: 'hsl(var(--text-muted))' }}>
@@ -326,6 +348,152 @@ function AdminJadwal() {
             )})}
             {schedules.length === 0 && (
               <tr><td colSpan="5" style={{ textAlign: 'center', padding: '2rem', color: 'hsl(var(--text-muted))' }}>Data jadwal belum ada.</td></tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
+function AdminDaftarAntrean() {
+  const [schedules, setSchedules] = useState([]);
+  const [activeScheduleId, setActiveScheduleId] = useState('');
+  const [filterStatus, setFilterStatus] = useState('all');
+  const [tickets, setTickets] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => { loadSchedules(); }, []);
+
+  useEffect(() => {
+    if (activeScheduleId) loadTickets();
+  }, [activeScheduleId, filterStatus]);
+
+  const loadSchedules = async () => {
+    const { data } = await supabase.from('daily_schedules').select('*').order('queue_date', { ascending: false });
+    if (data && data.length > 0) {
+      setSchedules(data);
+      const today = new Date().toISOString().split('T')[0];
+      const todaySch = data.find(s => s.queue_date === today);
+      setActiveScheduleId(todaySch ? todaySch.id : data[0].id);
+    }
+  };
+
+  const loadTickets = async () => {
+    setLoading(true);
+    let query = supabase.from('tickets').select('*, profiles(full_name)').eq('schedule_id', activeScheduleId).order('queue_number', { ascending: true });
+    
+    if (filterStatus !== 'all') {
+      query = query.eq('status', filterStatus);
+    }
+    
+    const { data } = await query;
+    if (data) setTickets(data);
+    setLoading(false);
+  };
+
+  const handleSelesaikanManual = async (ticketId) => {
+    if (!window.confirm("Yakin selesaikan antrian manual?")) return;
+    setLoading(true);
+    const { error } = await supabase.from('tickets')
+       .update({ status: 'completed' })
+       .eq('id', ticketId)
+       .in('status', ['called', 'waiting']);
+    
+    if (!error) {
+      alert("Antrean berhasil diselesaikan.");
+      loadTickets();
+    } else {
+      alert("Gagal menyelesaikan antrean: " + error.message);
+    }
+    setLoading(false);
+  };
+
+  return (
+    <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+      <h2 style={{ fontSize: '1.75rem' }}>Daftar Seluruh Antrean</h2>
+      
+      <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'flex-end', background: 'hsla(var(--primary)/0.05)', padding: '1.5rem', borderRadius: 'var(--radius-md)' }}>
+        <div style={{ flex: 1.5, minWidth: '250px' }}>
+          <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>Pilih Jadwal / Gelombang</label>
+          <select 
+            value={activeScheduleId} 
+            onChange={(e) => setActiveScheduleId(e.target.value)} 
+            style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-sm)', border: '1px solid hsla(var(--border))', background: 'var(--bg)' }}
+          >
+            {schedules.map(sch => (
+               <option key={sch.id} value={sch.id}>
+                 {sch.schedule_name} - {format(parseISO(sch.queue_date), 'dd MMM yyyy', {locale: id})}
+               </option>
+            ))}
+          </select>
+        </div>
+        <div style={{ flex: 1, minWidth: '150px' }}>
+          <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>Filter Status</label>
+          <select 
+            value={filterStatus} 
+            onChange={(e) => setFilterStatus(e.target.value)} 
+            style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-sm)', border: '1px solid hsla(var(--border))', background: 'var(--bg)' }}
+          >
+            <option value="all">Semua Status</option>
+            <option value="waiting">Belum Terpanggil</option>
+            <option value="called">Sedang Dipanggil</option>
+            <option value="completed">Sudah Selesai</option>
+          </select>
+        </div>
+        <button onClick={loadTickets} disabled={loading} className="btn btn-primary" style={{ padding: '0.75rem 1.5rem' }}>
+           Segarkan
+        </button>
+      </div>
+
+      <div className="admin-table-wrapper" style={{ overflowX: 'auto' }}>
+        <table style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse' }}>
+          <thead>
+            <tr style={{ borderBottom: '2px solid hsla(var(--border))' }}>
+              <th style={{ padding: '1rem 0' }}>No Antrean</th>
+              <th>Nama Calon Siswa</th>
+              <th>Status</th>
+              <th>Waktu Dipanggil</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            {loading ? (
+              <tr><td colSpan="5" style={{ textAlign: 'center', padding: '2rem' }}>Memuat data...</td></tr>
+            ) : tickets.length === 0 ? (
+              <tr><td colSpan="5" style={{ textAlign: 'center', padding: '2rem', color: 'hsl(var(--text-muted))' }}>Belum ada antrean untuk jadwal & filter ini.</td></tr>
+            ) : (
+              tickets.map(t => (
+                <tr key={t.id} style={{ borderBottom: '1px solid hsla(var(--border))' }}>
+                  <td style={{ padding: '1rem 0', fontWeight: 'bold' }}>
+                     <span className="badge" style={{ background: 'hsla(var(--primary)/0.2)', color: 'hsl(var(--primary))' }}>
+                       {t.queue_number}
+                     </span>
+                  </td>
+                  <td>{t.profiles?.full_name || 'Tidak diketahui'}</td>
+                  <td>
+                    {t.status === 'waiting' && <span style={{ color: '#fbbf24', fontWeight: 600 }}>Mnggu. Panggilan</span>}
+                    {t.status === 'called' && <span style={{ color: '#60a5fa', fontWeight: 600 }}>Mnggu. Scan QR</span>}
+                    {t.status === 'completed' && <span style={{ color: '#34d399', fontWeight: 600 }}>Selesai / Terlayani</span>}
+                    {t.status === 'no_show' && <span style={{ color: '#f87171', fontWeight: 600 }}>Tidak Hadir</span>}
+                    {t.status === 'cancelled' && <span style={{ color: '#f87171', fontWeight: 600 }}>Dibatalkan</span>}
+                  </td>
+                  <td>
+                    {t.called_at ? format(parseISO(t.called_at), 'HH:mm (dd MMM)', {locale: id}) : '-'}
+                  </td>
+                  <td>
+                    {t.status === 'called' && (
+                      <button 
+                        onClick={() => handleSelesaikanManual(t.id)} 
+                        className="btn btn-outline" 
+                        style={{ padding: '0.25rem 0.75rem', fontSize: '0.8rem', borderColor: '#34d399', color: '#34d399' }}
+                      >
+                        Selesaikan Manual
+                      </button>
+                    )}
+                  </td>
+                </tr>
+              ))
             )}
           </tbody>
         </table>
