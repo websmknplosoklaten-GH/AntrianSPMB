@@ -2,6 +2,7 @@
 CREATE TABLE profiles (
   id UUID REFERENCES auth.users NOT NULL PRIMARY KEY,
   full_name TEXT NOT NULL,
+  nisn TEXT,
   phone_number TEXT,
   role TEXT DEFAULT 'student' CHECK (role IN ('student', 'admin')),
   created_at TIMESTAMPTZ DEFAULT NOW()

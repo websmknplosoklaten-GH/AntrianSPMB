@@ -381,7 +381,7 @@ function AdminDaftarAntrean() {
 
   const loadTickets = async () => {
     setLoading(true);
-    let query = supabase.from('tickets').select('*, profiles(full_name)').eq('schedule_id', activeScheduleId).order('queue_number', { ascending: true });
+    let query = supabase.from('tickets').select('*, profiles(full_name, nisn)').eq('schedule_id', activeScheduleId).order('queue_number', { ascending: true });
     
     if (filterStatus !== 'all') {
       query = query.eq('status', filterStatus);
@@ -452,6 +452,7 @@ function AdminDaftarAntrean() {
             <tr style={{ borderBottom: '2px solid hsla(var(--border))' }}>
               <th style={{ padding: '1rem 0' }}>No Antrean</th>
               <th>Nama Calon Siswa</th>
+              <th>NISN</th>
               <th>Status</th>
               <th>Waktu Dipanggil</th>
               <th>Aksi</th>
@@ -471,6 +472,7 @@ function AdminDaftarAntrean() {
                      </span>
                   </td>
                   <td>{t.profiles?.full_name || 'Tidak diketahui'}</td>
+                  <td>{t.profiles?.nisn || '-'}</td>
                   <td>
                     {t.status === 'waiting' && <span style={{ color: '#fbbf24', fontWeight: 600 }}>Mnggu. Panggilan</span>}
                     {t.status === 'called' && <span style={{ color: '#60a5fa', fontWeight: 600 }}>Mnggu. Scan QR</span>}

@@ -107,6 +107,11 @@ export function UserDashboard() {
     );
   }
 
+  // INTERCEPTOR: Wajib lengkapi profil sebelum bisa ambil antrean
+  if (!user?.profile?.full_name || !user?.profile?.nisn) {
+    return <ProfileCompletionForm user={user} />;
+  }
+
   return (
     <div className="animate-slide-up" style={{ marginTop: '2rem' }}>
       {ticket ? (
@@ -247,6 +252,77 @@ function ScheduleSelection({ schedules, onSelect }) {
           );
         })}
       </div>
+    </div>
+  );
+}
+
+function ProfileCompletionForm({ user }) {
+  const [fullName, setFullName] = useState(user?.profile?.full_name || '');
+  const [nisn, setNisn] = useState(user?.profile?.nisn || '');
+  const [saving, setSaving] = useState(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!fullName.trim() || !nisn.trim()) {
+      return alert('Nama Lengkap dan NISN wajib diisi sebelum melanjutkan.');
+    }
+    
+    // Validasi panjang minimum sekadarnya untuk menghindari input typo 1 karakter
+    if (nisn.length < 5) {
+      return alert('NISN terlalu pendek. Mohon isi dengan valid.');
+    }
+
+    setSaving(true);
+    const { error } = await supabase.from('profiles')
+      .update({ full_name: fullName.trim(), nisn: nisn.trim() })
+      .eq('id', user.id);
+    
+    if (error) {
+      alert('Gagal menyimpan profil: ' + error.message);
+      setSaving(false);
+    } else {
+      alert('Data profil berhasil disimpan!');
+      window.location.reload(); // Paksa muat ulang agar AuthContext menarik data profil yang baru
+    }
+  };
+
+  return (
+    <div className="animate-slide-up glass-card" style={{ maxWidth: '500px', margin: '4rem auto', padding: '2.5rem' }}>
+      <h2 style={{ fontSize: '1.75rem', marginBottom: '1rem', color: 'hsl(var(--primary))', textAlign: 'center' }}>
+        Lengkapi Data Siswa
+      </h2>
+      <p style={{ color: 'hsl(var(--text-muted))', marginBottom: '2rem', textAlign: 'center', lineHeight: 1.5 }}>
+        Pendaftaran antrean membutuhkan data identitas resmi Anda. Form ini hanya perlu diisi sekali di awal.
+      </p>
+
+      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+        <div>
+          <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>Nama Lengkap Siswa</label>
+          <input 
+            type="text" 
+            value={fullName}
+            onChange={(e) => setFullName(e.target.value)}
+            placeholder="Masukkan sesuai akte / kartu pelajar"
+            style={{ width: '100%', padding: '1rem', borderRadius: 'var(--radius-sm)', border: '1px solid hsla(var(--border))', background: 'hsla(var(--primary)/0.03)' }}
+            disabled={saving}
+          />
+        </div>
+        <div>
+          <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>Nomor Induk Siswa Nasional (NISN)</label>
+          <input 
+            type="text" 
+            value={nisn}
+            onChange={(e) => setNisn(e.target.value)}
+            placeholder="Misal: 0012345678"
+            style={{ width: '100%', padding: '1rem', borderRadius: 'var(--radius-sm)', border: '1px solid hsla(var(--border))', background: 'hsla(var(--primary)/0.03)' }}
+            disabled={saving}
+          />
+        </div>
+
+        <button type="submit" disabled={saving} className="btn btn-primary" style={{ padding: '1rem', marginTop: '1rem', fontSize: '1.125rem', fontWeight: 700 }}>
+          {saving ? 'Sedang Menyimpan...' : 'Simpan & Buka Akses Antrean'}
+        </button>
+      </form>
     </div>
   );
 }
